@@ -17,12 +17,13 @@ class HTMLNode:
             html += f'{key}="{val}" '
         return html[0:-1]
 
+
 class ParentNode(HTMLNode):
     def __init__(self, tag=None, children=None, props=None):
         super().__init__(tag, None, children, props)
     
     def to_html(self):
-        if not self.tag:
+        if self.tag == None:
             raise Exception(ValueError)
         elif not self.children:
             raise Exception(ValueError, "No children")
@@ -33,6 +34,7 @@ class ParentNode(HTMLNode):
         html += f"</{self.tag}>"
         return html
 
+
 class LeafNode(HTMLNode):
     def __init__(self, tag=None, value=None, props=None):
         self.children = None
@@ -41,19 +43,37 @@ class LeafNode(HTMLNode):
     def to_html(self):
         tag = self.tag
 
-        if not self.value:
+        if self.value == None:
             raise Exception(ValueError)
 
-        if not tag:
+        if tag == None:
             return self.value
 
-        if tag == "a":
+        if self.props != None:
 
             return f"<{tag} {self.props_to_html()}>{self.value}</{tag}>"
 
         return f"<{tag}>{self.value}</{tag}>"
-        
-# An HTMLNode without a tag will just render as raw text
-# An HTMLNode without a value will be assumed to have children
-# An HTMLNode without children will be assumed to have a value
-# An HTMLNode without props simply won't have any attributes
+
+def text_node_to_html_node(node):
+    types = ["text", "bold", "italic", "code", "link","image"]
+    if node.text_type not in types:
+        raise Exception("Not A Supported Type")
+
+    if node.text_type == "text":
+        return LeafNode(value=text_node.text)
+
+    elif node.text_type == "bold":
+        return LeafNode("b", node.text)
+
+    elif node.text_type == "italic":
+        return LeafNode("i", node.text)
+    
+    elif node.text_type == "code":
+        return LeafNode("code", node.text)
+
+    elif node.text_type == "link":
+        return LeafNode("a", node.text, {"href": node.url})
+    
+    elif node.text_type == "image":
+        return LeafNode("img", "", {"src": node.url, "alt": node.text})
