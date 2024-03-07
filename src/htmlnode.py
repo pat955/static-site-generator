@@ -17,7 +17,42 @@ class HTMLNode:
             html += f'{key}="{val}" '
         return html[0:-1]
 
+class ParentNode(HTMLNode):
+    def __init__(self, tag=None, children=None, props=None):
+        super().__init__(tag, None, children, props)
+    
+    def to_html(self):
+        if not self.tag:
+            raise Exception(ValueError)
+        elif not self.children:
+            raise Exception(ValueError, "No children")
+        
+        html = f"<{self.tag}>"
+        for child in self.children:
+            html += child.to_html()
+        html += f"</{self.tag}>"
+        return html
 
+class LeafNode(HTMLNode):
+    def __init__(self, tag=None, value=None, props=None):
+        self.children = None
+        super().__init__(tag, value, None, props)
+    
+    def to_html(self):
+        tag = self.tag
+
+        if not self.value:
+            raise Exception(ValueError)
+
+        if not tag:
+            return self.value
+
+        if tag == "a":
+
+            return f"<{tag} {self.props_to_html()}>{self.value}</{tag}>"
+
+        return f"<{tag}>{self.value}</{tag}>"
+        
 # An HTMLNode without a tag will just render as raw text
 # An HTMLNode without a value will be assumed to have children
 # An HTMLNode without children will be assumed to have a value
