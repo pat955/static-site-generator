@@ -57,13 +57,12 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
 
 def extract_markdown_images(text):
-    return re.findall(r"!\[([^ ]*?)\]\(([^ ]*?)\)", text)
+    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
     # return re.findall(r"!\[.*?\]\(.*?\)", text)
 
 
 def extract_markdown_links(text):
-
-    return re.findall(r"\[([^ ]*?)\]\(([^ ]*?)\)", text)
+    return re.findall(r"\[(.*?)\]\((.*?)\)", text)
     # return re.findall(r"\[.*?\]\(.*?\)", text)
 
 
@@ -109,10 +108,8 @@ def split_nodes_links(old_nodes):
             if new_node == "":
                 continue
             try:
-
                 link_tuple = extract_markdown_links(new_node)[0]
-
-                new_nodes.append(TextNode(link_tuple[0], "link", link_tuple[1]))
+                new_nodes.append(TextNode(img_tuple[0], "link", img_tuple[1]))
                 
             except Exception as e:
                 if type(e) != IndexError:
