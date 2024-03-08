@@ -8,12 +8,10 @@ def main():
     new_nodes = split_nodes_delimiter([node], "`", "code")
 
     node = TextNode("This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)", "text")
-   
-    # text = "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and ![another](https://i.imgur.com/dfsdkjfd.png)! !!!!"
-
-    # print(extract_markdown_images(text))
-    # text = "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
-    # print(extract_markdown_links(text))
+    node = TextNode(
+    "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
+    "text",)
+    new_nodes = split_nodes_image([node])
 
 
 def text_node_to_html_node(node):
@@ -57,9 +55,11 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
     return new_nodes
 
+
 def extract_markdown_images(text):
     return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
     # return re.findall(r"!\[.*?\]\(.*?\)", text)
+
 
 def extract_markdown_links(text):
     return re.findall(r"\[(.*?)\]\((.*?)\)", text)
@@ -76,9 +76,11 @@ def split_nodes_image(old_nodes):
         if not images:
             new_nodes.append(node)
         
-        split = re.split(r"(!\[.*?\]\(.*?\))", node.text)
+        split = re.split(r"(!\[[^ ]*?\]\([^ ]*?\))", node.text)
 
         for new_node in split:
+            if new_node == "":
+                continue
             try:
                 img_tuple = extract_markdown_images(new_node)[0]
                 new_nodes.append(TextNode(img_tuple[0], "image", img_tuple[1]))
@@ -87,8 +89,8 @@ def split_nodes_image(old_nodes):
                 if type(e) != IndexError:
                     print(e)
                 new_nodes.append(TextNode(new_node, "text"))
-
     return new_nodes
+
 
 def split_nodes_links(old_nodes):
     new_nodes = []
@@ -100,9 +102,11 @@ def split_nodes_links(old_nodes):
         if not links:
             new_nodes.append(node)
         
-        split = re.split(r"(\[.*?\]\(.*?\))", node.text)
+        split = re.split(r"(\[[^ ]*?\]\([^ ]*?\))", node.text)
 
         for new_node in split:
+            if new_node == "":
+                continue
             try:
                 link_tuple = extract_markdown_links(new_node)[0]
                 new_nodes.append(TextNode(img_tuple[0], "link", img_tuple[1]))
@@ -111,7 +115,6 @@ def split_nodes_links(old_nodes):
                 if type(e) != IndexError:
                     print(e)
                 new_nodes.append(TextNode(new_node, "text"))
-
     return new_nodes
 
 main()
