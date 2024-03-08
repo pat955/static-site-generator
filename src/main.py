@@ -57,12 +57,28 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
 
 def extract_markdown_images(text):
-    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+    return re.findall(r"!\[([^ ]*?)\]\(([^ ]*?)\)", text)
     # return re.findall(r"!\[.*?\]\(.*?\)", text)
 
+def separate_links(text):
+    i = 0 
+    split_text = re.split(r"(!\[[^ ]*?\]\([^ ]*?\))", text)
+    for text in split_text:
+        if split_text[i][-1] == '!':
+            split_text.remove(text)
+            continue
+        i += 1
+    return split_text
 
 def extract_markdown_links(text):
-    return re.findall(r"\[(.*?)\]\((.*?)\)", text)
+    i = 0
+    matches = re.findall(r"(\[([^ ]*?)\]\(([^ ]*?)\))", text)
+    for match in matches:
+        if matches[i][-1] == '!':
+            matches.remove(match)
+            continue
+        i += 1
+    return matches
     # return re.findall(r"\[.*?\]\(.*?\)", text)
 
 
@@ -95,21 +111,23 @@ def split_nodes_image(old_nodes):
 def split_nodes_links(old_nodes):
     new_nodes = []
     for node in old_nodes:
-        links = extract_markdown_links(node.text)
-        
+
         if node.text == None:
             continue
+
+        links = extract_markdown_links(node.text)
+        
         if not links:
             new_nodes.append(node)
         
-        split = re.split(r"(\[[^ ]*?\]\([^ ]*?\))", node.text)
-
+        split = separate_links(node.text)
+        
         for new_node in split:
             if new_node == "":
                 continue
             try:
                 link_tuple = extract_markdown_links(new_node)[0]
-                new_nodes.append(TextNode(img_tuple[0], "link", img_tuple[1]))
+                new_nodes.append(TextNode(link_tuple[0], "link", link_tuple[1]))
                 
             except Exception as e:
                 if type(e) != IndexError:
@@ -117,4 +135,15 @@ def split_nodes_links(old_nodes):
                 new_nodes.append(TextNode(new_node, "text"))
     return new_nodes
 
+
+def text_to_textnodes(text):
+    bold = "**"
+    italic = "*"
+    code = "`"
+
+    new_nodes = []
+    new_nodes.append(split_nodes_delimiter([text], bold, "bold"))
+    new_nodes.append(split_nodes_delimiter([text], italic, "italic"))
+    new_nodes.append(split_nodes_delimiter([text], code, "code"))
+    return new
 main()
