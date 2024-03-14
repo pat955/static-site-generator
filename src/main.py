@@ -119,17 +119,25 @@ def split_nodes_links(old_nodes):
             if new_node == "":
                 continue
             
-            n = re.findall(r"\[([^ ]*?)\]\(([^ ]*?)\)", new_node)
-    
-            if n in [links]:
+            try:
+                link_tuple = re.findall(r"\[([^ ]*?)\]\(([^ ]*?)\)", new_node)[0]
+            except Exception as e:
+                link_tuple = []
+
+            if link_tuple in links:
+                
                 if temp_merged_str != "":
                     new_nodes.append(TextNode(temp_merged_str, "text"))
                     temp_merged_str = ""
 
-                n = n[0]
-                new_nodes.append(TextNode(n[0], "link", n[1]))
+                new_nodes.append(TextNode(link_tuple[0], "link", link_tuple[1]))
                 continue
+                
             temp_merged_str += new_node
+
+        if temp_merged_str != "":
+            new_nodes.append(TextNode(temp_merged_str, "text"))
+
     return new_nodes
 
 

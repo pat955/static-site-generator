@@ -39,22 +39,23 @@ class TestSplitNodes(unittest.TestCase):
         ]
         self.assertEqual(res, answer)
     
-    # def test_split_links2(self):
-    #     node = TextNode("text test text test image here soon!! ![nope] here: ![link!](https://example.png)  !!!! second image???? [2](https://hello.png)", "text")
-    #     res = split_nodes_links([node])
-    #     answer = [
-    #     TextNode("text test text test image here soon!! ![nope] here: ![link!](https://example.png)  !!!! second image???? ", "text"),
+    def test_split_links2(self):
+        node = TextNode("text test text test image here soon!! ![nope] here: ![link!](https://example.png)  !!!! second image???? [2](https://hello.png)", "text")
+        res = split_nodes_links([node])
+        answer = [
+        TextNode("text test text test image here soon!! ![nope] here: ![link!](https://example.png)  !!!! second image???? ", "text"),
     
-    #     TextNode("2", "link", "https://hello.png")
-    #     ]
-    #     self.assertEqual(res, answer)
+        TextNode("2", "link", "https://hello.png")
+        ]
+        self.assertEqual(res, answer)
     
-    # def test_split_links3(self):
-    #     node = TextNode("Hello John! ![a trick] [link](https://no.com)... [fakelink]]((https::///))", "text")
-    #     res = split_nodes_links([node])
-    #     answer = [
-    #     TextNode("Hello John! ![a trick] ", "text"),
-    #     TextNode("link", "link", "https://no.com"),
-    #     TextNode("... [fakelink]]((https::///))", "text"),
-    #     ]
-    #     self.assertEqual(res, answer)
+    def test_split_links3(self):
+        node = TextNode("Hello John! ![a trick] [link](https://no.com)... [fakelink]](https::///)", "text")
+        res = split_nodes_links([node])
+        answer = [
+        TextNode("Hello John! ![a trick] ", "text"),
+        TextNode("link", "link", "https://no.com"),
+        TextNode("... ", "text"),
+        TextNode("fakelink]", "link", "https::///")
+        ]
+        self.assertEqual(res, answer)
