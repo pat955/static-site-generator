@@ -72,7 +72,6 @@ def extract_markdown_links(text):
         if split_text[i-1][-1] != '!' and re.match(r"\[([^ ]*?)\]\(([^ ]*?)\)", t):
             links.append(t)
         i += 1
-    print(re.findall(r"\[([^ ]*?)\]\(([^ ]*?)\)", ''.join(links)))
     return re.findall(r"\[([^ ]*?)\]\(([^ ]*?)\)", ''.join(links))
 
 
@@ -104,8 +103,8 @@ def split_nodes_image(old_nodes):
 
 def split_nodes_links(old_nodes):
     new_nodes = []
+    temp_merged_str = ""
     for node in old_nodes:
-
         if node.text == None:
             continue
 
@@ -119,14 +118,18 @@ def split_nodes_links(old_nodes):
         for new_node in split:
             if new_node == "":
                 continue
-            try:
-                link_tuple = extract_markdown_links(new_node)[0]
-                new_nodes.append(TextNode(link_tuple[0], "link", link_tuple[1]))
-                
-            except Exception as e:
-                if type(e) != IndexError:
-                    print(e)
-                new_nodes.append(TextNode(new_node, "text"))
+            
+            n = re.findall(r"\[([^ ]*?)\]\(([^ ]*?)\)", new_node)
+    
+            if n in [links]:
+                if temp_merged_str != "":
+                    new_nodes.append(TextNode(temp_merged_str, "text"))
+                    temp_merged_str = ""
+
+                n = n[0]
+                new_nodes.append(TextNode(n[0], "link", n[1]))
+                continue
+            temp_merged_str += new_node
     return new_nodes
 
 

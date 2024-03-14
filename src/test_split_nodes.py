@@ -34,7 +34,7 @@ class TestSplitNodes(unittest.TestCase):
         node = TextNode("This is an image: ![dontcapture](https://dontcapture.com) this is a link: [capture](https://capture.com)", "text")
         res = split_nodes_links([node])
         answer = [
-        TextNode("This is an image: ![dontcapture](https://dontcapture.com) this is a link:", "text"),
+        TextNode("This is an image: ![dontcapture](https://dontcapture.com) this is a link: ", "text"),
         TextNode("capture", "link", "https://capture.com")
         ]
         self.assertEqual(res, answer)
