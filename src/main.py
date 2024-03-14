@@ -60,26 +60,20 @@ def extract_markdown_images(text):
     return re.findall(r"!\[([^ ]*?)\]\(([^ ]*?)\)", text)
     # return re.findall(r"!\[.*?\]\(.*?\)", text)
 
-def separate_links(text):
-    i = 0 
-    split_text = re.split(r"(!\[[^ ]*?\]\([^ ]*?\))", text)
-    for text in split_text:
-        if split_text[i][-1] == '!':
-            split_text.remove(text)
-            continue
-        i += 1
-    return split_text
-
 def extract_markdown_links(text):
-    i = 0
-    matches = re.findall(r"(\[([^ ]*?)\]\(([^ ]*?)\))", text)
-    for match in matches:
-        if matches[i][-1] == '!':
-            matches.remove(match)
+    i = 0 
+    links = []
+    split_text = re.split(r"(\[[^ ]*?\]\([^ ]*?\))", text)
+    for t in split_text:
+        if i == 0:
+            i += 1
             continue
+
+        if split_text[i-1][-1] != '!' and re.match(r"\[([^ ]*?)\]\(([^ ]*?)\)", t):
+            links.append(t)
         i += 1
-    return matches
-    # return re.findall(r"\[.*?\]\(.*?\)", text)
+    print(re.findall(r"\[([^ ]*?)\]\(([^ ]*?)\)", ''.join(links)))
+    return re.findall(r"\[([^ ]*?)\]\(([^ ]*?)\)", ''.join(links))
 
 
 def split_nodes_image(old_nodes):
@@ -120,7 +114,7 @@ def split_nodes_links(old_nodes):
         if not links:
             new_nodes.append(node)
         
-        split = separate_links(node.text)
+        split =  re.split(r"(\[[^ ]*?\]\([^ ]*?\))", node.text)
         
         for new_node in split:
             if new_node == "":
