@@ -163,11 +163,12 @@ def text_to_textnodes(text):
     return new_nodes
 
 def markdown_to_blocks(markdown):
+    #remove trailing whitespace and empty blocks
     blocks = []
     start_of_block = 0 
     i = 0 
     
-    split_markdown = [e+"\n" for e in markdown.split("\n")]
+    split_markdown = [e.strip()+"\n" for e in markdown.split("\n")]
     split_markdown[-1] = split_markdown[-1][0:-1]
     
     for line in split_markdown:
@@ -178,6 +179,41 @@ def markdown_to_blocks(markdown):
     blocks.append(''.join(split_markdown[start_of_block:i]))
     return blocks
 
+def block_to_block_type(markdown):
+
+    if re.match("[#]{1,6}[ ]", markdown):
+        return "heading"
+
+    elif re.match("/{3}.*?/{3}", markdown):
+        return "code"
+
+    quote = True
+    unordered = True
+    ordered = True
+    i = 0
+    for line in markdown.split("\n"):
+        line = line.strip()
+        if line == "":
+            continue
+
+        i += 1
+        if line[0] != ">":
+            quote = False
+        
+        if line[0] != "*" and line[0] != "-":
+            unordered = False
+        
+        if not line.startswith(f"{i}."):
+            ordered = False
+
+    if quote:
+        return "quote"
+    elif unordered:
+        return "unordered"
+    elif ordered:
+        return "ordered"
+    else:
+        return "paragraph"
 
 
 main()

@@ -16,7 +16,7 @@ class TestMarkdownToBlocks(unittest.TestCase):
         self.assertEqual(res, ans)
 
     def test3(self):
-        markdown = "something\n"
+        markdown = "  something   \n"
         res = markdown_to_blocks(markdown)
         ans = ["something\n"]
         self.assertEqual(res, ans)
