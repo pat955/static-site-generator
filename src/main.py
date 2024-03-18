@@ -109,7 +109,6 @@ def split_nodes_links(old_nodes):
     
     for node in old_nodes:
         temp_merged_str = ""
-        print(node)
         if node.text == None:
             continue
 
@@ -162,4 +161,23 @@ def text_to_textnodes(text):
     new_nodes = split_nodes_links(new_nodes)
    
     return new_nodes
+
+def markdown_to_blocks(markdown):
+    blocks = []
+    start_of_block = 0 
+    i = 0 
+    
+    split_markdown = [e+"\n" for e in markdown.split("\n")]
+    split_markdown[-1] = split_markdown[-1][0:-1]
+    
+    for line in split_markdown:
+        if line == "\n":
+            blocks.append(''.join(split_markdown[start_of_block:i]))
+            start_of_block = i + 1
+        i += 1
+    blocks.append(''.join(split_markdown[start_of_block:i]))
+    return blocks
+
+
+
 main()
