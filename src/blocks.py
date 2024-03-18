@@ -1,5 +1,6 @@
 import re 
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
+
 def markdown_to_blocks(markdown):
     #remove trailing whitespace and empty blocks
     blocks = []
@@ -55,7 +56,7 @@ def block_to_block_type(markdown):
         return "paragraph"
 
 def markdown_to_html_node(markdown):
-    toplevel_node = HTMLNode(tag="div", children=[])
+    toplevel_node = ParentNode(tag="div", children=[])
     blocks = markdown_to_blocks(markdown)
 
     for block in blocks:
@@ -84,9 +85,9 @@ def quote_block(parent_node, block):
 
 def list_block(parent_node, block, block_type):
     if block_type == "ordered":
-        list_node = HTMLNode("ol", children=[])
+        list_node = ParentNode("ol", children=[])
     else:
-        list_node = HTMLNode("ul", children=[])
+        list_node = ParentNode("ul", children=[])
 
     for line in block.split("\n"):
         if line == "":
@@ -96,7 +97,7 @@ def list_block(parent_node, block, block_type):
 
 
 def code_block(parent_node, block):
-    container_node = HTMLNode(tag="pre", children=[])
+    container_node = ParentNode(tag="pre", children=[])
     container_node.children.append(LeafNode(tag="code", value=re.findall("[/]{3}(.*?)[/]{3}", block)[0]))
     parent_node.children.append(container_node)
 

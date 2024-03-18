@@ -30,6 +30,7 @@ class ParentNode(HTMLNode):
         
         html = f"<{self.tag}>"
         for child in self.children:
+            print(child)
             html += child.to_html()
         html += f"</{self.tag}>"
         return html
