@@ -6,7 +6,7 @@ class HTMLNode:
         self.props = props
     
     def __repr__(self):
-        return f"HTMLNode: tag={self.tag}, value={self.value}, children={self.children}, props={self.props}"
+        return f"HTMLNode(tag={self.tag}, value={self.value}, children={self.children}, props={self.props})"
 
     def to_html(self):
         raise Exception(NotImplementedError)
@@ -39,6 +39,8 @@ class LeafNode(HTMLNode):
     def __init__(self, tag=None, value=None, props=None):
         self.children = None
         super().__init__(tag, value, None, props)
+    def __repr__(self):
+        return f"LeafNode(tag={self.tag}, value={self.value}, children={self.children}, props={self.props})"
     
     def to_html(self):
         tag = self.tag
@@ -55,25 +57,3 @@ class LeafNode(HTMLNode):
 
         return f"<{tag}>{self.value}</{tag}>"
 
-def text_node_to_html_node(node):
-    types = ["text", "bold", "italic", "code", "link","image"]
-    if node.text_type not in types:
-        raise Exception("Not A Supported Type")
-
-    if node.text_type == "text":
-        return LeafNode(value=text_node.text)
-
-    elif node.text_type == "bold":
-        return LeafNode("b", node.text)
-
-    elif node.text_type == "italic":
-        return LeafNode("i", node.text)
-    
-    elif node.text_type == "code":
-        return LeafNode("code", node.text)
-
-    elif node.text_type == "link":
-        return LeafNode("a", node.text, {"href": node.url})
-    
-    elif node.text_type == "image":
-        return LeafNode("img", "", {"src": node.url, "alt": node.text})

@@ -1,7 +1,7 @@
 
 import re
 from textnode import TextNode
-from htmlnode import LeafNode
+from htmlnode import LeafNode, HTMLNode
 
 def main():
     pass
@@ -181,15 +181,16 @@ def markdown_to_blocks(markdown):
 
 def block_to_block_type(markdown):
 
-    if re.match("[#]{1,6}[ ]", markdown):
+    if re.match(r"[#]{1,6}[ ]", markdown):
         return "heading"
 
     elif re.match("/{3}.*?/{3}", markdown):
         return "code"
 
     quote = True
-    unordered = True
     ordered = True
+    unordered = True
+    
     i = 0
     for line in markdown.split("\n"):
         line = line.strip()
@@ -221,21 +222,20 @@ def markdown_to_html_node(markdown):
 
     for block in blocks:
         block_type = block_to_block_type(block)
+        if block_type == "heading":
+            heading_block(toplevel_node, block)
 
-        if block_type == "quote":
+        elif block_type == "quote":
             quote_block(toplevel_node, block)
 
         elif block_type in ["unordered", "ordered"]:
-            unordered_list_block(toplevel_node, block, block_type)
+            list_block(toplevel_node, block, block_type)
 
         elif block_type == "code":
             code_block(toplevel_node, block)
         
-        elif block_to_block_type == "heading":
-            heading_block(toplevel_node, block)
         else:
             toplevel_node.children.append(LeafNode(tag="p", value=block))
-
     return toplevel_node
     
     
@@ -250,22 +250,22 @@ def list_block(parent_node, block, block_type):
     else:
         list_node = HTMLNode("ul", children=[])
 
-    for line in block:
-        print(line)
+    for line in block.split("\n"):
+        if line == "":
+            continue
         list_node.children.append(LeafNode(tag="li", value=line))
     parent_node.children.append(list_node)
 
 
 def code_block(parent_node, block):
     container_node = HTMLNode(tag="pre", children=[])
-    container_node.children.append(LeafNode(tag="code", value=block))
+    container_node.children.append(LeafNode(tag="code", value=re.findall("[/]{3}(.*?)[/]{3}", block)[0]))
     parent_node.children.append(container_node)
 
 
 def heading_block(parent_node, block):
-    print(re.match(r"([#]{1,6})[ ]", block))
-    i = len(re.match(r"([#]{1,6})[ ]", block))
-    parent_node.children.append(LeafNode(tag=f"h{i}", value=block[i+1:]))
+    i = len(re.search(r"([#]{1,6})[ ]", block)[0]) - 1
+    parent_node.children.append(LeafNode(tag=f"h{i}", value=block.strip("\n")[i+1:]))
 
     
 
