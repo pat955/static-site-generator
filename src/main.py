@@ -215,5 +215,58 @@ def block_to_block_type(markdown):
     else:
         return "paragraph"
 
+def markdown_to_html_node(markdown):
+    toplevel_node = HTMLNode(tag="div", children=[])
+    blocks = markdown_to_blocks(markdown)
+
+    for block in blocks:
+        block_type = block_to_block_type(block)
+
+        if block_type == "quote":
+            quote_block(toplevel_node, block)
+
+        elif block_type in ["unordered", "ordered"]:
+            unordered_list_block(toplevel_node, block, block_type)
+
+        elif block_type == "code":
+            code_block(toplevel_node, block)
+        
+        elif block_to_block_type == "heading":
+            heading_block(toplevel_node, block)
+        else:
+            toplevel_node.children.append(LeafNode(tag="p", value=block))
+
+    return toplevel_node
+    
+    
+def quote_block(parent_node, block):
+    quote_node = LeafNode(tag="quoteblock", value=block)
+    parent_node.children.append(quote_block)
+
+
+def list_block(parent_node, block, block_type):
+    if block_type == "ordered":
+        list_node = HTMLNode("ol", children=[])
+    else:
+        list_node = HTMLNode("ul", children=[])
+
+    for line in block:
+        print(line)
+        list_node.children.append(LeafNode(tag="li", value=line))
+    parent_node.children.append(list_node)
+
+
+def code_block(parent_node, block):
+    container_node = HTMLNode(tag="pre", children=[])
+    container_node.children.append(LeafNode(tag="code", value=block))
+    parent_node.children.append(container_node)
+
+
+def heading_block(parent_node, block):
+    print(re.match(r"([#]{1,6})[ ]", block))
+    i = len(re.match(r"([#]{1,6})[ ]", block))
+    parent_node.children.append(LeafNode(tag=f"h{i}", value=block[i+1:]))
+
+    
 
 main()
