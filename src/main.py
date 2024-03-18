@@ -5,39 +5,23 @@ from htmlnode import LeafNode
 
 def main():
     pass
-    # node = TextNode("This is text with a `code block` word", "text")
-    # new_nodes = split_nodes_delimiter([node], "`", "code")
-
-    # node = TextNode("This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)", "text")
-    # node = TextNode(
-    # "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
-    # "text",)
-    # new_nodes = split_nodes_image([node])
-
 
 def text_node_to_html_node(node):
-    types = ["text", "bold", "italic", "code", "link","image"]
-    if node.text_type not in types:
-        raise Exception("Not A Supported Type")
-
+    types_dict = {
+        # name : (params: tag, text, props) 
+        "bold" : ("b", node.text),
+        "italic" : ("i", node.text),
+        "code" : ("code", node.text),
+        "link" : ("a", node.text, {"href": node.url}),
+        "image" : ("img", "", {"src": node.url, "alt": node.text})
+    }
     if node.text_type == "text":
         return LeafNode(value=text_node.text)
-
-    elif node.text_type == "bold":
-        return LeafNode("b", node.text)
-
-    elif node.text_type == "italic":
-        return LeafNode("i", node.text)
-    
-    elif node.text_type == "code":
-        return LeafNode("code", node.text)
-
-    elif node.text_type == "link":
-        return LeafNode("a", node.text, {"href": node.url})
-    
-    elif node.text_type == "image":
-        return LeafNode("img", "", {"src": node.url, "alt": node.text})
-
+        
+    for typ, params in types_dict.items():
+        if node.text_type == typ:
+            return LeafNode(*params)
+    raise Exception("Not A Supported Type")
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
@@ -46,7 +30,6 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         if type(node) != TextNode or node.text_type != "text":
             new_nodes.append(node)
             continue
-                  
        
         split_nodes = re.split(f"[{delimiter}]{{{del_count}}}(.*?)[{delimiter}]{{{del_count}}}", node.text)
         
@@ -57,14 +40,11 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 new_nodes.append(TextNode(text, text_type))
                 continue
             new_nodes.append(TextNode(text, "text"))
-        
-
     return new_nodes
 
 
 def extract_markdown_images(text):
     return re.findall(r"!\[([^ ]*?)\]\(([^ ]*?)\)", text)
-    # return re.findall(r"!\[.*?\]\(.*?\)", text)
 
 def extract_markdown_links(text):
     i = 0 
@@ -157,7 +137,6 @@ def split_nodes_links(old_nodes):
                     temp_merged_str = ""
 
                 new_nodes.append(TextNode(link_tuple[0], "link", link_tuple[1]))
-
             else:
                 temp_merged_str += new_node
 
