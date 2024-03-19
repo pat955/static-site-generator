@@ -69,7 +69,7 @@ def markdown_to_html_node(markdown):
             html_block += text_node_to_html_node(text_node).to_html()
 
         if block_type == "heading":
-            heading_block(toplevel_node, block)
+            heading_block(toplevel_node, html_block)
 
         elif block_type == "quote":
             quote_block(toplevel_node, html_block)
