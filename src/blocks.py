@@ -23,8 +23,8 @@ def markdown_to_blocks(markdown):
 def block_to_block_type(markdown):
     if re.match(r"[#]{1,6}[ ]", markdown):
         return "heading"
-
-    elif re.match("/{3}.*?/{3}", markdown):
+    
+    elif re.match(r"```[\S\s]*?```", markdown):
         return "code"
 
     quote = True
@@ -107,7 +107,7 @@ def list_block(parent_node, block, block_type):
 
 def code_block(parent_node, block):
     container_node = ParentNode(tag="pre", children=[])
-    container_node.children.append(LeafNode(tag="code", value=re.match("[/]{3}(.*?)[/]{3}", block)[0]))
+    container_node.children.append(LeafNode(tag="code", value=re.findall(r"```\n([\S\s]*?)```", block)[0]))
     parent_node.children.append(container_node)
 
 

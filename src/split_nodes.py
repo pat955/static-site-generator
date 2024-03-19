@@ -43,14 +43,14 @@ def split_nodes_image(old_nodes):
             new_nodes.append(node)
             continue
         
-        split = re.split(r"(!\[[^ ]*?\]\([^ ]*?\))", node.text)
+        split = re.split(r"(!\[.*?\]\(.*?\))", node.text)
 
         for new_node in split:
             if new_node == "":
                 continue
 
             try:
-                image_tuple = re.findall(r"!\[([^ ]*?)\]\(([^ ]*?)\)", new_node)[0]
+                image_tuple = re.findall(r"!\[(.*?)\]\((.*?)\)", new_node)[0]
                 
             except Exception as e:
                 image_tuple = []
