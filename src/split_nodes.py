@@ -23,22 +23,10 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
 
 def extract_markdown_images(text):
-    return re.findall(r"!\[([^ ]*?)\]\(([^ ]*?)\)", text)
+    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
 
 def extract_markdown_links(text):
-    i = 0 
-    links = []
-    split_text = re.split(r"(\[[^ ]*?\]\([^ ]*?\))", text)
-    for t in split_text:
-        if i == 0:
-            i += 1
-            continue
-
-        if split_text[i-1][-1] != '!' and re.match(r"\[([^ ]*?)\]\(([^ ]*?)\)", t):
-            links.append(t)
-        i += 1
-    return re.findall(r"\[([^ ]*?)\]\(([^ ]*?)\)", ''.join(links))
-
+    return re.findall(r"[^!]\[(.*?)\]\((.*?)\)", text)
 
 def split_nodes_image(old_nodes):
     new_nodes = []
@@ -91,20 +79,19 @@ def split_nodes_links(old_nodes):
         if node.text == None:
             continue
 
-        links = extract_markdown_links(node.text)
+        links = re.findall(r"[^!]\[(.*?)\]\((.*?)\)", node.text)
         
         if not links:
             new_nodes.append(node)
             continue
         
-        split =  re.split(r"(\[[^ ]*?\]\([^ ]*?\))", node.text)
+        split =  re.split(r"(\[.*?\]\(.*?\))", node.text)
         
         for new_node in split:
             if new_node == "":
                 continue
-            
             try:
-                link_tuple = re.findall(r"\[([^ ]*?)\]\(([^ ]*?)\)", new_node)[0]
+                link_tuple = re.findall(r"\[(.*?)\]\((.*?)\)", new_node)[0]
                 
             except Exception as e:
                 link_tuple = []
@@ -153,7 +140,6 @@ def text_to_textnodes(text):
         new_nodes = split_nodes_delimiter(new_nodes, delim, name)
 
     new_nodes = split_nodes_image(new_nodes)
-    print(new_nodes)
     new_nodes = split_nodes_links(new_nodes)
    
     return new_nodes

@@ -21,7 +21,6 @@ def markdown_to_blocks(markdown):
     return blocks
 
 def block_to_block_type(markdown):
-
     if re.match(r"[#]{1,6}[ ]", markdown):
         return "heading"
 
@@ -68,7 +67,6 @@ def markdown_to_html_node(markdown):
 
         for text_node in text_nodes:
             html_block += text_node_to_html_node(text_node).to_html()
-    
 
         if block_type == "heading":
             heading_block(toplevel_node, block)
@@ -97,27 +95,22 @@ def list_block(parent_node, block, block_type):
     
     if block_type == "ordered":
         list_node = ParentNode("ol", children=[])
-        
     else:
         list_node = ParentNode("ul", children=[])
 
     for line in block.split("\n"):
         if line == "":
             continue
-        
         list_node.children.append(LeafNode(tag="li", value=re.sub(r"^- |\d. ", "", line)))
     parent_node.children.append(list_node)
 
 
 def code_block(parent_node, block):
     container_node = ParentNode(tag="pre", children=[])
-    container_node.children.append(LeafNode(tag="code", value=re.findall("[/]{3}(.*?)[/]{3}", block)[0]))
+    container_node.children.append(LeafNode(tag="code", value=re.match("[/]{3}(.*?)[/]{3}", block)[0]))
     parent_node.children.append(container_node)
 
 
 def heading_block(parent_node, block):
     i = len(re.search(r"([#]{1,6})[ ]", block)[0]) - 1
     parent_node.children.append(LeafNode(tag=f"h{i}", value=block.strip("\n")[i+1:]))
-
-    
-
