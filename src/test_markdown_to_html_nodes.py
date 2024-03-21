@@ -1,5 +1,4 @@
 import unittest
-
 from blocks import markdown_to_html_node
 from htmlnode import HTMLNode, LeafNode
 
@@ -30,6 +29,3 @@ class TestMarkdownToHTMLNodes(unittest.TestCase):
     #     res = markdown_to_html_node(markdown)
     #     ans = HTMLNode(tag="div", children=[LeafNode(tag="h6", value="heading1"), LeafNode(tag="h2", value="heading2")])
     #     self.assertEqual(res, ans)
-    
-    # def test4(self):
-    #     pass

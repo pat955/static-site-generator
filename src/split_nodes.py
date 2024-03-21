@@ -109,24 +109,6 @@ def split_nodes_links(old_nodes):
             new_nodes.append(TextNode(temp_merged_str, "text"))
     return new_nodes
 
-def text_node_to_html_node(node):
-    types_dict = {
-        # name : (params: tag, text, props) 
-        "bold" : ("b", node.text),
-        "italic" : ("i", node.text),
-        "code" : ("code", node.text),
-        "link" : ("a", node.text, {"href": node.url}),
-        "image" : ("img", "", {"src": node.url, "alt": node.text})
-    }
-    if node.text_type == "text":
-        return LeafNode(value=node.text)
-        
-    for typ, params in types_dict.items():
-        if node.text_type == typ:
-            return LeafNode(*params)
-    raise Exception("Not A Supported Type")
-
-
 def text_to_textnodes(text):
     del_dict = {
         "bold" : "**",

@@ -1,5 +1,4 @@
 import unittest
-
 from pages import extract_title
 
 class TestPages(unittest.TestCase):
@@ -8,6 +7,3 @@ class TestPages(unittest.TestCase):
         res = extract_title(markdown)
         ans = "Title"
         self.assertEqual(res, ans)
-    
-    def test2(self):
-        pass

@@ -1,5 +1,4 @@
 import unittest
-
 from blocks import block_to_block_type
 
 class TestBlockTypes(unittest.TestCase):

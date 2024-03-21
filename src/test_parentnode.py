@@ -1,5 +1,4 @@
 import unittest
-
 from htmlnode import ParentNode, LeafNode
 
 class TestParentNode(unittest.TestCase):

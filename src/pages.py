@@ -30,8 +30,10 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
     for i in files:
         if os.path.isfile(f"{dir_path_content}/{i}"):
             print(f"Generating {i}")
-            generate_page(f"{dir_path_content}/{i}", template_path, f"{dest_dir_path}/{i}.html")
+            # replace with regex
+            file_name = i.split('.')[0]+'.html'
+            generate_page(f"{dir_path_content}/{i}", template_path, f"{dest_dir_path}/{file_name}")
 
         else:
             os.mkdir(f"{dest_dir_path}/{i}")
-            r_generate_pages(f"{dir_path_content}/{i}", template_path, f"{dest_dir_path}/{i}")
+            generate_pages_recursive(f"{dir_path_content}/{i}", template_path, f"{dest_dir_path}/{i}")

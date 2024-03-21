@@ -1,7 +1,6 @@
 import unittest
-
-from main import text_node_to_html_node
 from textnode import TextNode
+from blocks import text_node_to_html_node
 
 class TestParentNode(unittest.TestCase):
     def test_to_htmlnode(self):
@@ -15,7 +14,3 @@ class TestParentNode(unittest.TestCase):
     def test_to_htmlnode3(self):
         node = TextNode("This is", "image", "https://example.com")
         self.assertEqual(text_node_to_html_node(node).to_html(), "<img src=\"https://example.com\" alt=\"This is\"></img>")
-
-
-# "<img>src=\"https://example.com\" alt=\"I loved This is an image of a capibarra\"</img>"
-# 

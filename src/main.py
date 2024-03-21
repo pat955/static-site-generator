@@ -13,7 +13,7 @@ def copy_static():
     if os.path.exists("./public/"):
         shutil.rmtree("./public/")
     os.mkdir("./public/")
-    r_copy_static("./static", "./public")
+    copy_static_recursive("./static", "./public")
 
 
 def copy_static_recursive(p, destination):
@@ -25,6 +25,6 @@ def copy_static_recursive(p, destination):
             
         else:
             os.mkdir(f"{destination}/{file}/")
-            r_copy_static(f"{p}/{file}/", f"{destination}/{file}/")
+            copy_static_recursive(f"{p}/{file}/", f"{destination}/{file}/")
 
 main()
