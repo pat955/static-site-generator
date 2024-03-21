@@ -5,11 +5,11 @@ import shutil
 from textnode import TextNode
 from htmlnode import LeafNode, HTMLNode
 from split_nodes import *
-from pages import generate_page
+from pages import generate_page, r_generate_pages
 
 def main():
     copy_static()
-    generate_page("./content/index.md", "./template.html", "./public/index.html")
+    r_generate_pages("./content", "./template.html", "./public")
 
 
 def copy_static():
