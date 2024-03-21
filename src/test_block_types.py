@@ -16,7 +16,7 @@ class TestBlockTypes(unittest.TestCase):
         self.assertEqual(res, ans)
 
     def test3(self):
-        markdown = "///code///\n"
+        markdown = "```?code```\n"
         res = block_to_block_type(markdown)
         ans = "code"
         self.assertEqual(res, ans)

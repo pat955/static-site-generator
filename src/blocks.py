@@ -3,7 +3,7 @@ from htmlnode import HTMLNode, LeafNode, ParentNode
 from split_nodes import text_node_to_html_node, text_to_textnodes
 
 def markdown_to_blocks(markdown):
-    #remove trailing whitespace and empty blocks
+    # remove empty blocks
     blocks = []
     start_of_block = 0 
     i = 0 
@@ -19,6 +19,7 @@ def markdown_to_blocks(markdown):
     
     blocks.append(''.join(split_markdown[start_of_block:i]))
     return blocks
+
 
 def block_to_block_type(markdown):
     if re.match(r"[#]{1,6}[ ]", markdown):
@@ -55,6 +56,7 @@ def block_to_block_type(markdown):
         return "ordered"
     else:
         return "paragraph"
+
 
 def markdown_to_html_node(markdown):
     toplevel_node = ParentNode(tag="div", children=[])

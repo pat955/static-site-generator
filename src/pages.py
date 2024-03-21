@@ -3,8 +3,10 @@ import os
 from blocks import markdown_to_html_node, markdown_to_blocks, block_to_block_type
 
 def extract_title(markdown):
-    #raise error if no title is present 
-    return re.match(r"[#]{1}[ ](.*)", markdown)[0][2:]
+    try:
+        return re.match(r"[#]{1}[ ](.*)", markdown)[0][2:]
+    except:
+        raise Exception("No title in markdown file!")
 
 def generate_page(from_path, template_path, dest_path):
     print(f"Generating page...")
@@ -23,7 +25,7 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, "a") as f:
         f.write(temp_markdown)
     
-def r_generate_pages(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
     files = os.listdir(dir_path_content)
     for i in files:
         if os.path.isfile(f"{dir_path_content}/{i}"):
