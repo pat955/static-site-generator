@@ -19,6 +19,8 @@ class HTMLNode:
 
 
 class ParentNode(HTMLNode):
+    # Required to have children, (children=[] as a temporary work around)
+    # Cannot have a value
     def __init__(self, tag=None, children=None, props=None):
         super().__init__(tag, None, children, props)
     
@@ -38,6 +40,7 @@ class ParentNode(HTMLNode):
 
 
 class LeafNode(HTMLNode):
+    # No children
     def __init__(self, tag=None, value=None, props=None):
         self.children = None
         super().__init__(tag, value, None, props)

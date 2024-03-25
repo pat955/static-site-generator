@@ -6,11 +6,12 @@ from textnode import TextNode
 # Remove empty blocks?
 
 def markdown_to_blocks(markdown):
+    # Splits into blocks, returns list of blocks without trailing whitespaces
     blocks = re.split(r"\n\n", markdown)
     return list(map(lambda string: string.strip(), blocks))
     
 
-def block_to_block_type(markdown):
+def get_block_type(markdown):
     if re.match(r"[#]{1,6}[ ]", markdown):
         return "heading"
     
@@ -79,8 +80,8 @@ def heading_block(parent_node, block):
     i = len(re.search(r"([#]{1,6})[ ]", block)[0]) - 1
     parent_node.children.append(LeafNode(tag=f"h{i}", value=block.strip("\n")[i+1:]))
 
-### ^ Blocks
-### v Nodes 
+### < Blocks ###
+### > Nodes  ###
 
 def markdown_to_html_node(markdown):
     # Make top level node that we will later push into {{ Content }} in template html.
@@ -90,7 +91,7 @@ def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
 
     for block in blocks:
-        block_type = block_to_block_type(block)
+        block_type = get_block_type(block)
         text_nodes = text_to_textnodes(block)
         html_block = ""
 

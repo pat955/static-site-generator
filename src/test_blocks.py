@@ -1,5 +1,5 @@
 import unittest
-from blocks import split_nodes_image, split_nodes_links
+from blocks import *
 from textnode import TextNode
 
 class TestSplitNodes(unittest.TestCase):
@@ -58,3 +58,25 @@ class TestSplitNodes(unittest.TestCase):
         TextNode("link", "link", "https::///")
         ]
         self.assertEqual(res, answer)
+
+
+class TestCodeSplit(unittest.TestCase):
+    def test1(self):
+        nodes = [TextNode("test", "text"), TextNode('we `coding` here', "text")]
+        res = split_nodes_code(nodes)
+        answer = [
+        TextNode("test", "text"),
+        TextNode("we ", "text"),
+        TextNode("coding", "code"),
+        TextNode(" here", "text")
+        ]
+        self.assertEqual(res, answer)
+
+class TestExtraction(unittest.TestCase):
+    def test_images(self):
+        text = "this is an image ![imageeee!](https://www.example.com)) and another image: ![image](https://i.imgur.com/zjjcJKZ.png)!!!!!"
+        self.assertEqual(extract_markdown_images(text), [('imageeee!', 'https://www.example.com'), ('image', 'https://i.imgur.com/zjjcJKZ.png')])
+
+    def test_links(self):
+        text = "this is an image [link!!!](https://example.com)"
+        self.assertEqual(extract_markdown_links(text), [('link!!!', 'https://example.com')])

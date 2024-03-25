@@ -1,6 +1,7 @@
 from pages import generate_site
 
 def main():
-    generate_site("./content", "./template.html", "./public")
+    copy_static()
+    generate_pages_recursive("./content", "./template.html", "./public")
 
 main()
