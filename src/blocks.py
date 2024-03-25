@@ -138,7 +138,7 @@ def text_to_textnodes(text):
     del_dict = {
         "bold" : "**",
         "italic" : "*",
-        "code" : "`"
+        "code" : "|"
     }
 
     new_nodes = [TextNode(text, "text")]
@@ -159,9 +159,9 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             new_nodes.append(node)
             continue
        
-        split_nodes = re.split(f"[{delimiter}]{{{del_count}}}(.*?)[{delimiter}]{{{del_count}}}", node.text)
+        split_nodes = re.split(f"[{delimiter}]{{{del_count}}}([^{delimiter}]*?)[{delimiter}]{{{del_count}}}", node.text)
         
-        matches = re.findall(f"[{delimiter}]{{{del_count}}}(.*?)[{delimiter}]{{{del_count}}}", node.text)
+        matches = re.findall(f"[{delimiter}]{{{del_count}}}([^{delimiter}]*?)[{delimiter}]{{{del_count}}}", node.text)
         
         for text in split_nodes:
             if text in matches:
