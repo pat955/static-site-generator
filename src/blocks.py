@@ -62,7 +62,7 @@ def list_block(parent_node, block, block_type):
 def quote_block(parent_node, block):
     # Replaces the quote signs and adds a quote block to parent node
     block = block.replace("> ", "")
-    quote_node = LeafNode(tag="blockquote", value=block)
+    quote_node = LeafNode(tag="blockquote", value=block.replace("> ", ""))
     parent_node.children.append(quote_node)
 
 

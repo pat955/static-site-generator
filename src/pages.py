@@ -1,6 +1,26 @@
 import re 
 import os
+import shutil
 from blocks import markdown_to_html_node, markdown_to_blocks, block_to_block_type
+
+def copy_static():
+    if os.path.exists("./public/"):
+        shutil.rmtree("./public/")
+    os.mkdir("./public/")
+    copy_static_recursive("./static", "./public")
+
+
+def copy_static_recursive(p, destination):
+    static_files = os.listdir(p)
+    for file in static_files:
+        print(f'Moving "{file}"...')
+        if "." in file:
+            shutil.copy(f"{p}/{file}", destination)
+            
+        else:
+            os.mkdir(f"{destination}/{file}/")
+            copy_static_recursive(f"{p}/{file}/", f"{destination}/{file}/")
+
 
 def extract_title(markdown):
     try:
@@ -37,3 +57,8 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
         else:
             os.mkdir(f"{dest_dir_path}/{i}")
             generate_pages_recursive(f"{dir_path_content}/{i}", template_path, f"{dest_dir_path}/{i}")
+
+
+def generate_site(dir_path_content, template_path, dest_dir_path):
+    copy_static()
+    generate_pages_recursive(dir_path_content, template_path, dest_dir_path)
