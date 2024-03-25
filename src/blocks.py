@@ -2,24 +2,12 @@ import re
 from htmlnode import HTMLNode, LeafNode, ParentNode
 from textnode import TextNode
 
-def markdown_to_blocks(markdown):
-    # remove empty blocks
-    blocks = []
-    start_of_block = 0 
-    i = 0 
-    
-    split_markdown = [e.strip()+"\n" for e in markdown.split("\n")]
-    split_markdown[-1] = split_markdown[-1][0:-1]
-    
-    for line in split_markdown:
-        if line == "\n":
-            blocks.append(''.join(split_markdown[start_of_block:i]))
-            start_of_block = i + 1
-        i += 1
-    
-    blocks.append(''.join(split_markdown[start_of_block:i]))
-    return blocks
+# TODO
+# Remove empty blocks?
 
+def markdown_to_blocks(markdown):
+    return re.split(r"\n\n", markdown)
+    
 
 def block_to_block_type(markdown):
     if re.match(r"[#]{1,6}[ ]", markdown):
@@ -27,7 +15,7 @@ def block_to_block_type(markdown):
     
     elif re.match(r"```[\S|\s]*?```", markdown):
         return "code"
-
+    
     quote = True
     ordered = True
     unordered = True
@@ -54,11 +42,11 @@ def block_to_block_type(markdown):
         return "unordered"
     elif ordered:
         return "ordered"
-    else:
-        return "paragraph"
+    return "paragraph"
 
 
 def list_block(parent_node, block, block_type):
+    # Add correct list type to parent node. 
     if block_type == "ordered":
         list_node = ParentNode("ol", children=[])
     else:
@@ -72,12 +60,15 @@ def list_block(parent_node, block, block_type):
 
 
 def quote_block(parent_node, block):
+    # Replaces the quote signs and adds a quote block to parent node
     block = block.replace("> ", "")
     quote_node = LeafNode(tag="blockquote", value=block)
     parent_node.children.append(quote_node)
 
 
 def code_block(parent_node, block):
+    # Container node has tag pre for preformatted text element. 
+    # With regex extracts the code and removes ```
     container_node = ParentNode(tag="pre", children=[])
     container_node.children.append(LeafNode(tag="code", value=re.findall(r"```\n([\S\s]*?)```", block)[0]))
     parent_node.children.append(container_node)
@@ -87,8 +78,13 @@ def heading_block(parent_node, block):
     i = len(re.search(r"([#]{1,6})[ ]", block)[0]) - 1
     parent_node.children.append(LeafNode(tag=f"h{i}", value=block.strip("\n")[i+1:]))
 
+### ^ Blocks
+### v Nodes 
 
 def markdown_to_html_node(markdown):
+    # Make top level node that we will later push into {{ Content }} in template html.
+    # Get each blocks type and convert them to textnodes, then convert textnodes into html and add to hmtl block.
+    # Sorts through each block type and add itself and potential child nodes to toplevel.
     toplevel_node = ParentNode(tag="div", children=[])
     blocks = markdown_to_blocks(markdown)
 
@@ -117,6 +113,27 @@ def markdown_to_html_node(markdown):
     return toplevel_node
 
 
+def text_to_textnodes(text):
+    # For each basic delimiter calls split_nodes_delimiter. 
+    # Then the more difficult splits like code and links are called.
+    # Returns a list of all the new nodes separated into types.
+    del_dict = {
+        "bold" : "**",
+        "italic" : "*"
+    }
+
+    new_nodes = [TextNode(text, "text")]
+    
+    for name, delim in del_dict.items():
+        new_nodes = split_nodes_delimiter(new_nodes, delim, name)
+
+    new_nodes = split_nodes_code(new_nodes)
+    new_nodes = split_nodes_image(new_nodes)
+    new_nodes = split_nodes_links(new_nodes)
+   
+    return new_nodes
+
+
 def text_node_to_html_node(node):
     types_dict = {
         # name : (params: tag, text, props) 
@@ -134,22 +151,6 @@ def text_node_to_html_node(node):
             return LeafNode(*params)
     raise Exception("Not A Supported Type")
 
-def text_to_textnodes(text):
-    del_dict = {
-        "bold" : "**",
-        "italic" : "*",
-        "code" : "|"
-    }
-
-    new_nodes = [TextNode(text, "text")]
-    
-    for name, delim in del_dict.items():
-        new_nodes = split_nodes_delimiter(new_nodes, delim, name)
-
-    new_nodes = split_nodes_image(new_nodes)
-    new_nodes = split_nodes_links(new_nodes)
-   
-    return new_nodes
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
@@ -158,9 +159,8 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         if type(node) != TextNode or node.text_type != "text":
             new_nodes.append(node)
             continue
-       
+
         split_nodes = re.split(f"[{delimiter}]{{{del_count}}}([^{delimiter}]*?)[{delimiter}]{{{del_count}}}", node.text)
-        
         matches = re.findall(f"[{delimiter}]{{{del_count}}}([^{delimiter}]*?)[{delimiter}]{{{del_count}}}", node.text)
         
         for text in split_nodes:
@@ -171,8 +171,50 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     return new_nodes
 
 
+def split_nodes_code(old_nodes):
+    new_nodes = []
+    
+    for node in old_nodes:
+        temp_merged_str = ""
+        if node.text == None:
+            continue
+
+        code = re.findall(r"[^`](`[^`]*?`)[^`]", node.text)
+        if not code:
+            new_nodes.append(node)
+            continue
+        
+        split =  re.split(r"(`[^`]+`)", node.text)
+        line_pos = -1
+
+        for new_node in split:
+    
+            line_pos += 1
+            if new_node == "":
+                continue
+            
+            if new_node in code:
+                if split[line_pos - 1][-1] == "`" and line_pos != 0:
+                    temp_merged_str += new_node
+                    print(new_node, "continued...")
+                    continue
+
+                if temp_merged_str != "":
+                    new_nodes.append(TextNode(temp_merged_str, "text"))
+                    temp_merged_str = ""
+
+                new_nodes.append(TextNode(new_node.strip("`"), "code"))
+            else:
+                temp_merged_str += new_node
+
+        if temp_merged_str != "":
+            new_nodes.append(TextNode(temp_merged_str, "text"))
+    return new_nodes
+
+
 def extract_markdown_images(text):
     return re.findall(r"!\[([^]]*?)\]\((.*?)\)", text)
+
 
 def extract_markdown_links(text):
     return re.findall(r"[^!]\[([^]]*?)\]\((.*?)\)", text)

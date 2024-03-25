@@ -29,9 +29,11 @@ class ParentNode(HTMLNode):
             raise Exception(ValueError, "No children")
         
         html = f"<{self.tag}>"
+
         for child in self.children:
             html += child.to_html()
         html += f"</{self.tag}>"
+
         return html
 
 
@@ -48,10 +50,8 @@ class LeafNode(HTMLNode):
 
         if self.value == None:
             raise Exception(ValueError, "No value")
-
         if tag == None:
             return self.value
-
         if self.props != None:
             return f"<{tag} {self.props_to_html()}>{self.value}</{tag}>"
 
