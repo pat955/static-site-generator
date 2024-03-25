@@ -4,7 +4,7 @@ from textnode import TextNode
 
 class TestTextToTextnodes(unittest.TestCase):
     def test1(self):
-        text = "This is **text** with an *italic* word and a |code block| and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
+        text = "This is **text** with an *italic* word and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
         res = text_to_textnodes(text)
         answer = [
         TextNode("This is ", "text"),

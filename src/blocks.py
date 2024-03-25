@@ -6,7 +6,8 @@ from textnode import TextNode
 # Remove empty blocks?
 
 def markdown_to_blocks(markdown):
-    return re.split(r"\n\n", markdown)
+    blocks = re.split(r"\n\n", markdown)
+    return list(map(lambda string: string.strip(), blocks))
     
 
 def block_to_block_type(markdown):
