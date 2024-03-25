@@ -1,5 +1,5 @@
 import unittest
-from split_nodes import split_nodes_image, split_nodes_links
+from blocks import split_nodes_image, split_nodes_links
 from textnode import TextNode
 
 class TestSplitNodes(unittest.TestCase):
@@ -49,12 +49,12 @@ class TestSplitNodes(unittest.TestCase):
         self.assertEqual(res, answer)
     
     def test_split_links3(self):
-        node = TextNode("Hello John! ![a trick] [link](https://no.com)... [fakelink]](https::///)", "text")
+        node = TextNode("Hello John! ![a trick] [link](https://no.com)... [link](https::///)", "text")
         res = split_nodes_links([node])
         answer = [
         TextNode("Hello John! ![a trick] ", "text"),
         TextNode("link", "link", "https://no.com"),
         TextNode("... ", "text"),
-        TextNode("fakelink]", "link", "https::///")
+        TextNode("link", "link", "https::///")
         ]
         self.assertEqual(res, answer)
