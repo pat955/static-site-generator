@@ -3,7 +3,7 @@ from htmlnode import HTMLNode, LeafNode, ParentNode
 from textnode import TextNode
 
 # TODO
-# Remove empty blocks?
+# 
 
 def markdown_to_blocks(markdown):
     # Splits into blocks, returns list of blocks without trailing whitespaces
@@ -18,10 +18,11 @@ def get_block_type(markdown):
     elif re.match(r"```[\S|\s]*?```", markdown):
         return "code"
     
-    quote = True
-    ordered = True
-    unordered = True
-    
+    type_dict = {
+        "quote" : True,
+        "ordered": True,
+        "unordered": True
+    }
     i = 0
     for line in markdown.split("\n"):
         line = line.strip()
@@ -30,20 +31,17 @@ def get_block_type(markdown):
 
         i += 1
         if line[0] != ">":
-            quote = False
-        
-        if line[0] != "*" and line[0] != "-":
-            unordered = False
+            type_dict["quote"] = False
         
         if not line.startswith(f"{i}."):
-            ordered = False
-
-    if quote:
-        return "quote"
-    elif unordered:
-        return "unordered"
-    elif ordered:
-        return "ordered"
+            type_dict["ordered"] = False
+        
+        if line[0] != "*" and line[0] != "-":
+            type_dict["unordered"] = False
+        
+    for name, boool in type_dict.items():
+        if boool:
+            return name
     return "paragraph"
 
 
@@ -137,6 +135,7 @@ def text_to_textnodes(text):
 
 
 def text_node_to_html_node(node):
+    # Takes a textnode, returns leafnode 
     types_dict = {
         # name : (params: tag, text, props) 
         "bold" : ("b", node.text),
@@ -155,6 +154,13 @@ def text_node_to_html_node(node):
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
+    """
+    For simple split patterns
+    :param old_nodes: (list) 
+    :param delimiter: (str)
+    :param text_type: (str)
+    :returs new_nodes: (list)
+    """
     new_nodes = []
     del_count = len(delimiter)
     for node in old_nodes:
@@ -162,8 +168,8 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             new_nodes.append(node)
             continue
 
-        split_nodes = re.split(f"[{delimiter}]{{{del_count}}}([^{delimiter}]*?)[{delimiter}]{{{del_count}}}", node.text)
-        matches = re.findall(f"[{delimiter}]{{{del_count}}}([^{delimiter}]*?)[{delimiter}]{{{del_count}}}", node.text)
+        pattern = f"[{delimiter}]{{{del_count}}}([^{delimiter}]*?)[{delimiter}]{{{del_count}}}"
+        split_nodes, matches = re.split(pattern, node.text), re.findall(pattern, node.text)
         
         for text in split_nodes:
             if text in matches:

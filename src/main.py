@@ -1,4 +1,4 @@
-from pages import generate_site
+from pages import generate_pages_recursive, copy_static
 
 def main():
     copy_static()
