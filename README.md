@@ -9,6 +9,7 @@ git clone https://github.com/pat955/static-site-generator/
 
 Then, move into the content folder and start creating your markdown files. Before doing that, run this (while in folder) to see an example:
 ```
+cd static-site-generator
 ./main.sh
 ```
 
