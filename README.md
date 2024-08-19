@@ -2,17 +2,17 @@
 Converts markdown files to html and pushes it to your localhost. Customize the appearance via. css
 
 ## How to use
+### Clone project
 In your terminal using git:
-```
+```bash
 git clone https://github.com/pat955/static-site-generator/
 ```
-
+### Run Example Site
 Then, move into the content folder and start creating your markdown files. Before doing that, run this (while in folder) to see an example:
-```
+```bash
 cd static-site-generator
 ./main.sh
 ```
-
 Now visit [localhost:8888](http://localhost:8888/)
 Feel free to delete everything inside the static/images folder and everything inside content, **however** remember to have keep index.md inside content. This acts as your frontpage. 
 
@@ -20,8 +20,22 @@ To exit press: **Ctrl + C** or **Cmd + .**
 
 > **Not yet tested on Mac**
 
+### Adding more pages
+To add another page, simply add a folder to /content, and create a markdown file named **"index.md"** 
 
-## Changing appearance
+In your main index file you can do something like this to "link" it:
+```
+Hello! Read my [first post here](/example)
+```
+Or if you want to go backwards (added the | because of a bug, fixing it soon):
+```
+|[Back Home](/)|
+```
+This can also be chained: (/example/more_info/something_else)
+To go back one "chain": (..)
+If you're not familiar with markdown, take a look at this site for the basics: [markdownguide.org](https://www.markdownguide.org/getting-started/) **OBS:** Not everything may be supported
+
+## Customize apperance
 Right now the static site generator will only create dark pages, to change the colors, fonts and sizes, find **index.css** at the root of the project. 
 ```
 body {
@@ -38,17 +52,33 @@ body {
 ```
 Mess around with the colors and rerun the program to see how your new pages look!
 
+# Contributing
+Python version: 3.12
+### Clone project
+```bash
+git clone https://github.com/pat955/static-site-generator
+```
+### Download dependencies
+Install pip and python if you haven't already
 
-## Adding more pages
-To add another page, simply add a folder to /content, and create a markdown file named **"index.md"** 
+### Run Script
+Run the script instead of main.py, the script also starts localhos
+```bash
+./scripts/main.sh
+```
 
-In your main index file you can do something like this to "link" it:
+### Run the tests
+
+```bash
+./scripts/tests.sh
 ```
-Hello! Read my [first post here](/example)
-```
-Or if you want to go backwards (added the | because of a bug, fixing it soon):
-```
-|[Back Home](/)|
-```
-This can also be chained: (/example/more_info/something_else)
-To go back one "chain": (..)
+
+### Submit a pull request
+
+If you'd like to contribute, please fork the repository and open a pull request to the `main` branch.
+
+# Roadmap
+- [ ] Clean up code, issues, better documentation
+- [ ] Folder structure
+- [ ] Templates
+- [ ] Easier way to customize look
